@@ -1,0 +1,30 @@
+{
+  "name": "simple-backbone",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "rollup -c",
+    "watch": "rollup -c -w",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stephenLYao/simple-backbone.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/stephenLYao/simple-backbone/issues"
+  },
+  "homepage": "https://github.com/stephenLYao/simple-backbone#readme",
+  "devDependencies": {
+    "rollup": "^0.41.4",
+    "rollup-watch": "^3.2.2"
+  },
+  "dependencies": {
+    "jquery": "^3.1.1",
+    "underscore": "^1.8.3"
+  }
+}

@@ -2,10 +2,34 @@ var mBackbone = (function () {
 'use strict';
 
 /*
+	Events
+ */
+
+/*
+	Model
+ */
+
+var Model = function() { };
+
+/*
+	Collection
+ */
+
+var Collection = function() { };
+
+/*
 	View
  */
 
 var View = function() {
+  
+};
+
+/*
+	Router
+ */
+
+var Router = function() {
   
 };
 
@@ -35,7 +59,7 @@ var extend = function(protoProps, staticProps) {
 	return child
 };
 
-View.extend = extend;
+Model.extend = Collection.extend = Router.extend = View.extend = extend;
 
 return mBackbone;
 

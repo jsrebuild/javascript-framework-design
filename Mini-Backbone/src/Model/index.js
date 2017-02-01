@@ -2,5 +2,4 @@
 	Model
  */
 
-export var Model = function() { }
-  
+export var Model =  function() { }

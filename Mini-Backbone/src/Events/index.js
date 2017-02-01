@@ -2,6 +2,13 @@
 	Events
  */
 
+<<<<<<< HEAD
+export var Events = {}
+
+Events.on = function() {}
+
+Events.trigger = function() {}
+=======
 export var Events = Backbone.Events = {}
 
 //正则表达式匹配，事件名可以用空格分隔
@@ -227,3 +234,4 @@ Events.bind = Events.on
 Events.unbind = Events.off 
 
 _.extend(Backbone,Events)
+>>>>>>> 76f69de82b8e30b2dfab16386d5d5df575a6151b

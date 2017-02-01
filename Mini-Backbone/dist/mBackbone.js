@@ -5,11 +5,17 @@ var mBackbone = (function () {
 	Events
  */
 
+var Events = {};
+
+Events.on = function() {};
+
+Events.trigger = function() {};
+
 /*
 	Model
  */
 
-var Model = function() { };
+var Model =  function() { };
 
 /*
 	Collection
@@ -21,8 +27,8 @@ var Collection = function() { };
 	View
  */
 
-var View = function() {
-  
+var View =  function() {
+
 };
 
 /*
@@ -30,7 +36,7 @@ var View = function() {
  */
 
 var Router = function() {
-  
+
 };
 
 /*  	
@@ -59,7 +65,15 @@ var extend = function(protoProps, staticProps) {
 	return child
 };
 
+var mBackbone = {};
+
 Model.extend = Collection.extend = Router.extend = View.extend = extend;
+
+mBackbone.Events = Events;
+mBackbone.Model = Model;
+mBackbone.Collection = Collection;
+mBackbone.Router = Router;
+mBackbone.View = View;
 
 return mBackbone;
 

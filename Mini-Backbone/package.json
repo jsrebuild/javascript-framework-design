@@ -1,25 +1,30 @@
 {
-  "name": "simple-backbone",
+  "name": "mini-backbone",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "build": "rollup -c",
     "watch": "rollup -c -w",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "karma start"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/stephenLYao/simple-backbone.git"
+    "url": "git+https://github.com/stephenLYao/mini-backbone.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/stephenLYao/simple-backbone/issues"
+    "url": "https://github.com/stephenLYao/mini-backbone/issues"
   },
-  "homepage": "https://github.com/stephenLYao/simple-backbone#readme",
+  "homepage": "https://github.com/stephenLYao/mini-backbone#readme",
   "devDependencies": {
+    "karma": "^1.4.1",
+    "karma-phantomjs-launcher": "^1.0.2",
+    "karma-qunit": "^1.2.1",
+    "phantomjs-prebuilt": "^2.1.14",
+    "qunitjs": "^2.1.1",
     "rollup": "^0.41.4",
     "rollup-watch": "^3.2.2"
   },

@@ -2,5 +2,8 @@
 	Events
  */
 
-export var Events = function() { }
-  
+export var Events = {}
+
+Events.on = function() {}
+
+Events.trigger = function() {}

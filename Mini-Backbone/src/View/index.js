@@ -2,6 +2,6 @@
 	View
  */
 
-export var View = function() {
-  
+export var View =  function() {
+
 }

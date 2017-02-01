@@ -3,8 +3,8 @@ JavaScript框架设计
 
 ## Backbone
 
-- [ ] [你听我说- Events]()  
-- [ ] []()
-- [ ] []()
-- [ ] []()
-- [ ] []()  
+- [ ] [事件Events]()  
+- [ ] [模型Model]()
+- [ ] [集合Collection]()
+- [ ] [路由Route + History]()
+- [ ] [视图View]()  

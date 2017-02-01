@@ -48,7 +48,6 @@ var onApi = function(events, name, callback, opts){
 	}
 	return events 
 
-	//应该return handlers？？？？？
 }
 
 var offApi = function(events, name, callback, opts){
@@ -130,7 +129,17 @@ var triggerEvents = function(events,args){
 				return
 	}
 }
-
+//借助underscore中的_.once函数实现创建调用一次就会被移除的事件
+var onceMap = function(map,name,callback,offer){
+	if(callback){
+		var once = map[name] = _.once(function(){
+			offer(name,callback)	//借助offer函数解除绑定
+			callback.apply(this,arguments)	//调用函数
+		})
+		once._callback = _callback  //记录原callback，以便方便移除监听
+	}
+	return map 
+}
 
 
 
@@ -183,6 +192,20 @@ Events.stopListening = function(obj, name, callback){
 		//obj上事件解绑
 		listening.obj.off(name, callback,this)
 	}
+}
+
+//绑定只调用一次便解绑的事件
+Events.once = function(name,callback,context){
+	var events = eventsApi(onceMap,{},name,callback,_.bind(this.off,this))
+	if(typeof name === 'string' && context == null)	callback = void 0
+		return this.on(events,callback,context)	//绑定事件
+
+}
+
+//监听只调用一次就解除监听的事件
+Events.listenToOnce = function(obj,name,callback){
+	var events = eventsApi(onceMap,{},name, callback,_bind(this.stopListening,this,obj))
+	return this.listenTo(obj,events)
 }
 
 //触发事件，调用回调函数

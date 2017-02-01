@@ -15,7 +15,5 @@
     })
     counter.trigger('event')
     assert.equal(counter.count, 1, 'counter should be incremented.');
-  })
-
-  
+  })  
 })(QUnit)

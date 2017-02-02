@@ -6,7 +6,7 @@ export var Events = Backbone.Events = {}
 
 //辅助函数
 //正则表达式匹配，事件名可以用空格分隔
-var eventSplitter = /s+/
+var eventSplitter = /\s+/
 
 //处理多个事件绑定
 var eventsApi = function(iteratee, events, name, callback, opts){
@@ -14,7 +14,7 @@ var eventsApi = function(iteratee, events, name, callback, opts){
 	if(name && typeof name === 'object'){
 
 		if(callback !== void 0 && 'context' in opts && opts.context === void 0) opts.context = callback
-		for(name = _.keys(names); i <= names.length ; i++){
+		for(names = _.keys(name); i < names.length ; i++){
 			//递归调用eventsApi使得分割多个事件对象
 			events = eventsApi(iteratee,events,names[i],name[names[i]],opts)
 		}
@@ -27,21 +27,26 @@ var eventsApi = function(iteratee, events, name, callback, opts){
 		//只有一个事件
 		events = iteratee(events, name, callback, opts)
 	}
-
+	return events
 }
 
 var internalOn = function(obj, name, callback, context, listening){
-	var obj._events = eventsApi(onApi, obj._events||{}, name, callback,{
+		obj._events = eventsApi(onApi, obj._events||{}, name, callback,{
 		context: context,
       	ctx: obj,
       	listening: listening
 	})
+	if(listening){
+		var listeners = obj._listeners || (obj._listeners = {})
+		listeners[listening.id] = listening
+	}
+	return obj
 }
 
 
 var onApi = function(events, name, callback, opts){
 	if(callback) {
-		var handlers = events[name] || (events[name] == [])//检查是否存在events[name]数组，若无则创建
+		var handlers = events[name] || (events[name] = [])//检查是否存在events[name]数组，若无则创建
 		var context = opts.contexts, ctx = opts.ctx, listening = opts.listening
 		if(listening) listening.count++
 
@@ -106,7 +111,7 @@ var offApi = function(events, name, callback, opts){
 var triggerApi = function(objEvents, name, callback,args){
 	if(objEvents){
 		var events = objEvents[name]
-		var allEvents = objEvents[name]
+		var allEvents = objEvents.all
 		if(events && allEvents) allEvents = allEvents.slice()
 		if(events) triggerEvents(events,args)
 		if(allEvents) triggerEvents(allEvents, [name].contact(args))
@@ -137,7 +142,7 @@ var onceMap = function(map,name,callback,offer){
 			offer(name,callback)	//借助offer函数解除绑定
 			callback.apply(this,arguments)	//调用函数
 		})
-		once._callback = _callback  //记录原callback，以便方便移除监听
+		once._callback = callback  //记录原callback，以便方便移除监听
 	}
 	return map 
 }
@@ -159,17 +164,18 @@ Events.listenTo = function(obj,name,callback){
 
     //若此对象未被监听
     if(!listening){
-    	var thisId = this._listenId || (this._listenId == _.uniqueId('l'))
+    	var thisId = this._listenId || (this._listenId = _.uniqueId('l'))
     	listening = listeningTo[id] = {obj:obj, objId : id, id : thisId,listeningTo : listeningTo,count : 0}
     }
 
     internalOn(obj, name, callback, this, listening)
+    return this
 }
 
 //解除事件的绑定
 Events.off = function(name,callback,context){
 	//若未绑定事件
-	if(this._events) return this
+	if(!this._events) return this
 	this._events = eventsApi(offApi, this._events, name, callback, {
 		context: context,
 		listeners: this._listeners
@@ -179,8 +185,8 @@ Events.off = function(name,callback,context){
 
 //移除监听
 Events.stopListening = function(obj, name, callback){
-	var listenTo = this._listeningTo
-	if(!listenTo) return this
+	var listeningTo = this._listeningTo
+	if(!listeningTo) return this
 
 	//如果没有传入特定的参数对象，则将所有监听移除
 	var ids = obj ? [obj._listenId] : _.keys(listeningTo)
@@ -191,8 +197,9 @@ Events.stopListening = function(obj, name, callback){
 		if(!listening) break
 
 		//obj上事件解绑
-		listening.obj.off(name, callback,this)
+		listening.obj.off(name, callback, this)
 	}
+	return this
 }
 
 //绑定只调用一次便解绑的事件

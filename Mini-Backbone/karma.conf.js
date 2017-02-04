@@ -8,10 +8,10 @@ module.exports = function(config) {
     files: [
       'test/vendor/jquery.js',
       'test/vendor/underscore.js',
-      'dist/mBackbone.js',
+      'lib/mBackbone.js',
       'test/modules/*.js'
     ],
-    
+
     reporters: ['progress'],
     port: 9877,
     colors: true,

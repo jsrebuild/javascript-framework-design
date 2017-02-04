@@ -2,7 +2,7 @@
 	Events
  */
 
-export var Events = Backbone.Events = {}
+export var Events = {}
 
 //辅助函数
 //正则表达式匹配，事件名可以用空格分隔
@@ -52,13 +52,13 @@ var onApi = function(events, name, callback, opts){
 
 		handlers.push({callback: callback, context: context, ctx: context || ctx, listening: listening})
 	}
-	return events 
+	return events
 
 }
 
 var offApi = function(events, name, callback, opts){
 	//如果没有该事件则返回
-	if(!events) return 
+	if(!events) return
 	var i = 0,listening
  	var context = opts.context, listeners = opts.listeners
 
@@ -83,7 +83,7 @@ var offApi = function(events, name, callback, opts){
  		var remaining = []
  		for(var j = 0; j < handlers.length; j++){
  			var handler = handlers[j]
- 			if(callback && callback !== handler.callback 
+ 			if(callback && callback !== handler.callback
  				&& callback !== handler.callback._callback||
  				context && context !== handler.context){
  				//不满足删除条件时
@@ -119,19 +119,19 @@ var triggerApi = function(objEvents, name, callback,args){
 	return objEvents
 }
 
-//触发事件,由于backbone中一般最多只有三个事件，故分到case 3 
+//触发事件,由于backbone中一般最多只有三个事件，故分到case 3
 var triggerEvents = function(events,args){
 	var ev,i = -1,l = events.length, a1 = args[0],a2 = args[1],a3 = args[2]
 	switch(args.length){
-		case 0: while (++i < l) (ev = events[i]).callback.call(ev.ctx) 
+		case 0: while (++i < l) (ev = events[i]).callback.call(ev.ctx)
 				return
-		case 1: while (++i < l) (ev = events[i]).callback.call(ev.ctx, a1) 
+		case 1: while (++i < l) (ev = events[i]).callback.call(ev.ctx, a1)
 				return
-		case 2: while (++i < l) (ev = events[i]).callback.call(ev.ctx, a1, a2) 
+		case 2: while (++i < l) (ev = events[i]).callback.call(ev.ctx, a1, a2)
 				return
-		case 3: while (++i < l) (ev = events[i]).callback.call(ev.ctx,a1, a2, a3) 
+		case 3: while (++i < l) (ev = events[i]).callback.call(ev.ctx,a1, a2, a3)
 				return
-		default: while (++i < l) (ev = events[i]).callback.apply(ev.ctx,args) 
+		default: while (++i < l) (ev = events[i]).callback.apply(ev.ctx,args)
 				return
 	}
 }
@@ -144,7 +144,7 @@ var onceMap = function(map,name,callback,offer){
 		})
 		once._callback = callback  //记录原callback，以便方便移除监听
 	}
-	return map 
+	return map
 }
 
 
@@ -227,11 +227,11 @@ Events.trigger = function(name) {
 
 	eventsApi(triggerApi, this._events, name, void 0, args)
 
-	return this 
+	return this
 }
 
 
 Events.bind = Events.on
-Events.unbind = Events.off 
+Events.unbind = Events.off
 
-_.extend(Backbone,Events)
+// _.extend(Backbone,Events)

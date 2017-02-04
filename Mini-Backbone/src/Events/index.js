@@ -1,8 +1,9 @@
 /*
 	Events
  */
+import { mBackbone } from '../Initialize/index'
 
-export var Events = {}
+export var Events = mBackbone.Events = {}
 
 //辅助函数
 //正则表达式匹配，事件名可以用空格分隔
@@ -234,4 +235,4 @@ Events.trigger = function(name) {
 Events.bind = Events.on
 Events.unbind = Events.off
 
-// _.extend(Backbone,Events)
+_.extend(mBackbone,Events)

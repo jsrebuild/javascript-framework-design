@@ -1,7 +1,8 @@
 /*
 	Router
  */
+import { mBackbone } from '../Initialize/index'
 
-export var Router = function() {
+export var Router = mBackbone.Router = function() {
 
 }

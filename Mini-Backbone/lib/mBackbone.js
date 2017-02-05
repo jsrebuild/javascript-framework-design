@@ -255,15 +255,26 @@ var Collection = mBackbone$1.Collection = function() { };
 /*
 	View
  */
-var View =  mBackbone$1.View = function(options) {
-  this.cid = _.uniqueId('view');
-  _.extend(this, _.pick(options, viewOptions));
-};
-
 // view属性列表
 var viewOptions = ['model', 'collection', 'el', 'id', 'attributes', 'className', 'tagName', 'events'];
 
+
+var View =  mBackbone$1.View = function(options) {
+  this.cid = _.uniqueId('view');
+  _.extend(this, _.pick(options, viewOptions));
+  this._ensureElement();
+  this.initialize.apply(this, arguments);
+};
+
 _.extend(View.prototype, Events, {
+
+  tagName: 'div',
+
+  $: function(selector) {
+    return this.$el.find(selector)
+  },
+
+  
 
 });
 

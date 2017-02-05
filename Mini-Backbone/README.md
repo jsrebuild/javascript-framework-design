@@ -11,13 +11,12 @@
 
 内容主要分为这几块：  
 
-- 事件Events
-- 模型Model
-- 集合Collection
-- 路由Router
-- 视图View和视图template
+- [chapter1 - 事件Events](https://github.com/jsrebuild/javascript-framework-design/blob/master/Mini-Backbone/docs/chapter1-events/chapter1-events.md)
+- [chapter2 - 模型Model](https://github.com/jsrebuild/javascript-framework-design/blob/master/Mini-Backbone/docs/chapter2-model/chapter2-model.md)
+- [chapter3 - 集合Collection](https://github.com/jsrebuild/javascript-framework-design/blob/master/Mini-Backbone/docs/chapter4-router/chapter4-router.md)
+- [chapter4 - 路由Router + History](https://github.com/jsrebuild/javascript-framework-design/blob/master/Mini-Backbone/docs/chapter4-router/chapter4-router.md)
+- [chapter5 - 视图View](https://github.com/jsrebuild/javascript-framework-design/blob/master/Mini-Backbone/docs/chapter5-view/chapter5-view.md)
 
-？因为backbone是强依赖underscore以及jquery，所以一些utils或者helps是自己写还是直接用underscore
 
 ###chapter1 - Events
 主要实现下面几个api:  
@@ -27,8 +26,6 @@
 - triggle()
 - listenTo()
 - stopListening()
-
-？lab: 实现一个观察者模式的案例
 
 ###chapter2 - Model
 ###chapter3 - Collection

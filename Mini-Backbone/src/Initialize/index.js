@@ -1,3 +1,5 @@
 // mBackbone initialize
 
-export var mBackbone = {}
+export var mBackbone = {
+  '$': $
+}

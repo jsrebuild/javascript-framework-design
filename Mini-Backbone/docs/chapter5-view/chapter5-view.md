@@ -7,3 +7,5 @@
 - [chapter3 - 集合Collection](https://github.com/jsrebuild/javascript-framework-design/blob/master/Mini-Backbone/docs/chapter4-router/chapter4-router.md)
 - [chapter4 - 路由Router + History](https://github.com/jsrebuild/javascript-framework-design/blob/master/Mini-Backbone/docs/chapter4-router/chapter4-router.md)
 
+### 前言
+

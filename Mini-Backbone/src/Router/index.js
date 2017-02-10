@@ -16,12 +16,12 @@ export var Router = mBackbone.Router = function(options) {
   var splatParam    = /\*\w+/g;
   var escapeRegExp  = /[\-{}\[\]+?.,\\\^$|#\s]/g;
 
-_.extend(Router.prototype, Events, {
+_.extend(Router.prototype, mBackbone.Events, {
     preinitialize: function(){},
     initialize: function(){},
 
     // Manually bind a single named route to a callback.
-    route: function(){
+    route: function(route,callback,name){
         if (!_.isRegExp(route)) route = this._routeToRegExp(route);
         if (_.isFunction(name)) {
             callback = name;
@@ -40,24 +40,32 @@ _.extend(Router.prototype, Events, {
     // Execute a route handler with the provided parameters.  This is an
     // excellent place to do pre-route setup or post-route cleanup.
     execute: function(callback, args, name) {
-      if (callback) callback.apply(this, args);
+        if (callback) callback.apply(this, args);
     },
 
     // Simple proxy to `Backbone.history` to save a fragment into the history.
     navigate: function(fragment, options) {
-      Backbone.history.navigate(fragment, options);
-      return this;
+        Backbone.history.navigate(fragment, options);
+        return this;
+    },
+    _bindRoutes: function() {
+        if (!this.routes) return;
+        this.routes = _.result(this, 'routes');
+        var route, routes = _.keys(this.routes);
+        while ((route = routes.pop()) != null) {
+            this.route(route, this.routes[route]);
+        }
     },
     // Convert a route string into a regular expression, suitable for matching
     // against the current location hash.
     _routeToRegExp: function(route) {
-      route = route.replace(escapeRegExp, '\\$&')
-                   .replace(optionalParam, '(?:$1)?')
-                   .replace(namedParam, function(match, optional) {
-                     return optional ? match : '([^/?]+)';
-                   })
-                   .replace(splatParam, '([^?]*?)');
-      return new RegExp('^' + route + '(?:\\?([\\s\\S]*))?$');
+        route = route.replace(escapeRegExp, '\\$&')
+            .replace(optionalParam, '(?:$1)?')
+            .replace(namedParam, function(match, optional) {
+                return optional ? match : '([^/?]+)';
+            })
+            .replace(splatParam, '([^?]*?)');
+        return new RegExp('^' + route + '(?:\\?([\\s\\S]*))?$');
     },
     // Given a route, and a URL fragment that it matches, return the array of
     // extracted decoded parameters. Empty or unmatched parameters will be
@@ -92,7 +100,7 @@ var rootStripper = /^\/+|\/+$/g;
 // Has the history handling already been started?
 History.started = false;
 
-_.extend(History.prototype, Events, {
+_.extend(History.prototype, mBackbone.Events, {
     // Unicode characters in `location.pathname` are percent encoded so they're
     // decoded for comparison. `%25` should not be decoded since it may be part
     // of an encoded parameter.
@@ -117,7 +125,7 @@ _.extend(History.prototype, Events, {
         if (fragment == null) {
             fragment = this.getPath();
         }
-        return fragment.replace(routeStripper, '');
+        return fragment
     },
     start: function(options) {
         if (History.started) throw new Error('Backbone.history has already been started');

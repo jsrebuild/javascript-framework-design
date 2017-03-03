@@ -38,14 +38,10 @@ _.extend(View.prototype, Events, {
 
   setElement: function(element) {
     this.undelegateEvents()
-    this._setElement(element)
-    this.delegateEvents()
-    return this
-  },
-
-  _setElement: function(el) {
     this.$el = el instanceof mBackbone.$ ? el : mBackbone.$(el)
     this.el = this.$el[0]
+    this.delegateEvents()
+    return this
   },
 
   delegateEvents: function(events) {
@@ -79,24 +75,16 @@ _.extend(View.prototype, Events, {
     this.$el.off(eventName + '.delegateEvents' + this.cid, selector, listener)
     return this
   },
-
-  _createElement: function(tagName) {
-    return document.createElement(tagName)
-  },
-
+  
   _ensureElement: function() {
     if(!this.el) {
       var attrs = _.extend({}, _.result(this, 'attributes'))
       if(this.id) attrs.id = _.result(this, 'id')
       if(this.className) attrs['class'] = _.result(this, 'className')
-      this.setElement(this._createElement(_.result(this, 'tagName')))
-      this._setAttributes(attrs)
+      this.setElement(document.createElement(_.result(this, 'tagName')))
+      this.$el.attr(attrs)
     } else {
       this.setElement(_.result(this, 'el'))
     }
-  },
-
-  _setAttributes: function(attrs) {
-    this.$el.attr(attrs)
   }
 })

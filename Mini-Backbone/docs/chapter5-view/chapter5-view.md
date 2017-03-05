@@ -8,16 +8,16 @@
 - [chapter4 - 路由Router + History](https://github.com/jsrebuild/javascript-framework-design/blob/master/Mini-Backbone/docs/chapter4-router/chapter4-router.md)
 
 ### 前言
-MVC架构中的view的作用主要用来将model中的数据显示到用户界面，同时监听绑定到view的事件，执行相应的操作。Backbone中的view做的事情其实不多，这里我们主要从组件化的角度去实现一个view： 
+MVC架构中View的作用主要用来将Model中的数据显示到用户界面，同时监听绑定到View的事件，执行相应的操作。Backbone中的View做的事情其实不多，这里我们主要从组件化的角度去实现一个View： 
 
 - 初始化
 - 生命周期
 - 事件机制
 
-作个比喻，笔者认为一个view就是一个组件，一个组件类似于自然界的生物，它具有从诞生到销毁的生命周期，具有名字（id），能够对外界刺激作出反应的事件机制。接下来我们将从这个方向展开，实现一个可操作的view。  
+作个比喻，笔者认为一个View就是一个组件，一个组件类似于自然界的生物，它具有从诞生到销毁的生命周期，具有名字（id），能够对外界刺激作出反应的事件机制。接下来我们将从这个方向展开，实现一个可操作的View。  
 
 ### 初始化
-初始化一个view，我们只需要给其赋予一个名字，赋予它天生携带的属性，接着把它创造出来，最后带上一个初始化技能（也就是initialize方法)）, 根据以上我们实现一个View类，并且挂载到全局`mBackbone`变量上:  
+初始化一个View，我们只需要给其赋予一个名字，赋予它天生携带的属性，接着把它创造出来，最后带上一个初始化技能（也就是initialize方法)）, 根据以上我们实现一个View类，并且挂载到全局`mBackbone`变量上:  
 
 ```javascript
 var viewOptions = ['model', 'collection', 'el', 'id', 'attributes', 'className', 'tagName', 'events']
@@ -29,7 +29,7 @@ var View =  mBackbone.View = function(options) {
   this.initialize.apply(this, arguments)
 }
 ```
-其中`this.initialize.apply(this, arguments)`能够让view实例化后直接执行`initialize()`
+其中`this.initialize.apply(this, arguments)`能够让View实例化后直接执行`initialize()`
 方法，接下来看核心方法`this._ensureElement()`的实现，注意，为了让View具有Events模块的基本功能，我们需要从Events这里继承： 
 
 ```javascript

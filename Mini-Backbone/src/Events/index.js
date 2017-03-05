@@ -58,7 +58,6 @@ var onApi = function(events, name, callback, opts){
 }
 
 var offApi = function(events, name, callback, opts){
-	//如果没有该事件则返回
 	if(!events) return
 	var i = 0,listening
  	var context = opts.context, listeners = opts.listeners

@@ -92,10 +92,10 @@ var History = function() {
     }
 };
 
-
+var routeStripper = /^[#\/]|\s+$/g;
 // Cached regex for stripping leading and trailing slashes.
 var rootStripper = /^\/+|\/+$/g;
-
+var pathStripper = /#.*$/;
 
 // Has the history handling already been started?
 History.started = false;
@@ -125,7 +125,7 @@ _.extend(History.prototype, mBackbone.Events, {
         if (fragment == null) {
             fragment = this.getPath();
         }
-        return fragment
+        return fragment.replace(routeStripper, '');
     },
     start: function(options) {
         if (History.started) throw new Error('Backbone.history has already been started');
@@ -149,10 +149,10 @@ _.extend(History.prototype, mBackbone.Events, {
         this.loadUrl();
     },
     loadUrl: function(fragment) {
-            // If the root doesn't match, no routes can match either.
-            if (!this.matchRoot()) return false;
-            fragment = this.fragment = this.getFragment(fragment);
-            return _.some(this.handlers, function(handler) {
+        // If the root doesn't match, no routes can match either.
+        if (!this.matchRoot()) return false;
+        fragment = this.fragment = this.getFragment(fragment);
+        return _.some(this.handlers, function(handler) {
             if (handler.route.test(fragment)) {
                 handler.callback(fragment);
                 return true;

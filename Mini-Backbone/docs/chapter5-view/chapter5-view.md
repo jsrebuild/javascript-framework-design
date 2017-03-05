@@ -150,9 +150,9 @@ _.extend(View.prototype, Events, {
 
 这个表达式如何匹配呢，举个例子，比如eventName是这样的：   
 
-`"click .foo .bar"`经过match方法匹配后返回一个数组: ["click .foo .bar", "click", ".foo .bar", index: 0, input: "click .foo .bar"]，我们需要提取事件名以及选择器，这也是为什么`delegate`传入"match[1],match[2]"这两个参数。这里需要注意的是，调用jQeury中的"on"方法，我们给每个事件名加了一个`'.delegateEvents' + this.cid`这样的命名空间，这样做的目的是在卸载事件的时候可以全部卸载带有该命名空间的事件。
+`"click .foo .bar"`经过match方法匹配后返回一个数组: ["click .foo .bar", "click", ".foo .bar", index: 0, input: "click .foo .bar"]，我们需要提取事件名以及选择器，这也是为什么`delegate`传入"match[1],match[2]"这两个参数。这里需要注意的是，调用jQuery中的"on"方法，我们给每个事件名加了一个`'.delegateEvents' + this.cid`这样的命名空间，这样做的目的是在卸载事件的时候可以全部卸载带有该命名空间的事件。
 
 ### 总结
-以上就是实现View的所有内容，可以说做的事情非常简单，其中大部分都交给开发者自己去实现(比如render)。 
+以上就是实现View的所有内容，可以说做的事情非常简单，其中大部分都交给开发者自己去实现(比如render,initialize等)。 
 
 

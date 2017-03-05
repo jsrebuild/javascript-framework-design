@@ -243,7 +243,7 @@ Events.listenToOnce = function(obj,name,callback){
 
 ### trigger的实现
 调用语句：`object.trigger(event, [*args]) ` <br>
-API`trigger`用于触发给定`event`中的一个或多个用空格隔开的事件的回调函数。后续传入 的参数会传递到触发事件的回调函数里。 `trigger`函数有两个辅助函数，其中`triggerApi`用于判断传入的事件是否为特殊事件`all`，另一个`triggerEvents`则是`trigger`的核心函数，用于触发相应事件。<br>
+API`trigger`用于触发给定`event`中的一个或多个用空格隔开的事件的回调函数。后续传入 的参数会传递到触发事件的回调函数里。 `trigger`函数有两个辅助函数，其中`triggerApi`用于判断传入的事件是否为特殊事件`all`，另一个`triggerEvents`，则是`trigger`的核心函数，用于触发相应事件。<br>
 首先来看`triggerEvents`。
 ```
 //触发事件,由于backbone中一般最多只有三个事件，故分到case 3

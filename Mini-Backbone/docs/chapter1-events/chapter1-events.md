@@ -2,51 +2,36 @@
 
 Backbone是早起的JavaScript前端MVC框架之一，是一个依赖于underscore和jquery的轻量级框架，尽管在当今已稍显落伍，但其精妙的设计与结构仍让读者受益匪浅。本文旨在介绍Backbone中最核心的Events事件模块，将依次分析`on`、`off`、`once`、`trigger`、`listenTo`、`stopListening`、`listenToOnce`等API的原理。本文会出现部分源码，请点击[这里](http://backbonejs.org/docs/backbone.html)查看完整源码
 
-> 首先要介绍一下Events模块的典型作用以及API的用法。虽然你下面在讲具体的源码的时候也提到了，但我觉得单独拿出来讲会比较好，这也是我们这一系列文章统一的风格。
+### Events简介
+
+Events是一个Backbone中的全局事件处理模块，可以通过调用API`on`、`off`、`once`、`trigger`、`listenTo`、`stopListening`、`listenToOnce`分别实现对事件的处理。其中
+* `on`
+    - 作用：添加自定义事件
+    - 调用语句：`object.on(name, callback, [context])`
+* `listenTo`
+    - 作用：添加一个观察对象
+    - 调用语句：`object.listenTo(other, event, callback)`
+* `off`
+    - 作用：删除自定义事件
+    - 调用语句：`object.off([event], [callback], [context])`
+* `stopListening`
+    - 作用：删除添加的观察对象
+    - 调用语句：`object.stopListening([other], [event], [callback]) `
+* `once`
+    - 作用：添加只执行一次的自定义事件 
+    - 调用语句：`object.once(event, callback, [context]) `
+* `listenToOnce`
+    - 作用：添加一个仅执行一次的观察对象
+    - 调用语句：`object.listenToOnce(other, event, callback) `
+* `trigger`
+    - 作用：触发自定义事件
+    - 调用语句：`object.trigger(event, [*args])`
 
 ### on的实现（别名：bind）
 
 调用语句：`object.on(name, callback, [context])` <br>
-API`on`主要是用于自身事件的绑定，在`object`上绑定一个`callback`回调函数，只要名为`name`的事件触发该回调函数就会调用，如果一个页面含有大量不同事件时，约定使用`:`来为事件增添命名空间，并用空格来分隔事件。而且回调函数中的`this`指向传递的第三个参数`context`。其实绑定呢，就是把`callback`填到相应的数组里。
+API`on`主要是用于自身事件的绑定，在`object`上绑定一个`callback`回调函数，只要名为`name`的事件触发该回调函数就会调用，如果一个页面含有大量不同事件时，约定使用`:`来为事件增添命名空间，并用空格来分隔事件。而且回调函数中的`this`指向传递的第三个参数`context`。其实绑定呢，就是把`callback`填到相应的数组里。<br>
 
-```
-Events.on = function(name, callback, context){
-    return internalOn(this,name,callback,context)
-}
-```
-
-首先来看一下`eventsApi`函数，`iteratee`是一个执行实际功能的函数，`events`是一个用来挂载所有事件的对象，`name`是事件名称，`callback`是回调函数，`opts`是额外参数，这个函数的主要作用是事件流`name`划分成一个一个的事件然后调用`iteratee`函数，并最后返回`events`数组。
-
-> 我不知道为什么你这边是倒序的，`eventsApi`是被`internalOn`调用的，首先你应该看`internalOn`的代码，然后才引入`eventsApi`，不然不是很莫名其妙吗？
-> 然后，相信你也发现了，`eventsApi`是一个被反复使用的函数。作用其实就是统一处理参数。将参数处理这层逻辑抽象出来，`iteratee`则是对各个API具体的各不相同的逻辑。如果你在文章最前面就盘点了各个API的用法，这里就可以在讲`eventsApi`的时候提到，这个API的作用是什么，为什么这个API在之后还会被用到。
-
-```
- var eventSplitter = /\s+/;
- //正则函数表达式，判断是否有多个空格
-var eventsApi = function(iteratee, events, name, callback, opts){
-    var i = 0,names
-    if(name && typeof name === 'object'){
-
-        if(callback !== void 0 && 'context' in opts && opts.context === void 0) opts.context = callback
-        for(names = _.keys(name); i < names.length ; i++){
-            //递归调用eventsApi使得分割多个事件对象
-            events = eventsApi(iteratee,events,names[i],name[names[i]],opts)
-        }
-    }
-    else if(name && eventSplitter.test(name)){
-        //如果一个对象提供了多个事件，则遍历事件数组，逐个调用iteratee函数
-        for (names = name.split(eventSplitter); i < names.length;i++)
-            events = iteratee(events, names[i], callback,opts)
-    }
-    else{
-        //只有一个事件
-        events = iteratee(events, name, callback, opts)
-    }
-    return events
-}
-```
-
-那么被调用的`iteratee`函数到底是什么样子的呢？<br>
 第一步来看函数`onApi`，这个函数的主要作用是在名为`events`的对象上创建一个`key`为事件名`name`的数组，并将包含`callback`以及从`opts`中获得的`context`、`listening`这些属性的对象推入数组。关于`listening`会在后文事件监听中介绍。
 
 ```
@@ -83,6 +68,34 @@ var internalOn = function(obj, name, callback, context, listening){
 }
 ```
 
+然后来看一下`eventsApi`函数，这是一个统一处理参数的函数，它实现的很巧妙，辅助`on`、`once`、`off`、`trigger`完成事件的添加、删除、触发。其参数中`iteratee`是一个执行实际功能的函数，`events`是一个用来挂载所有事件的对象，`name`是事件名称，`callback`是回调函数，`opts`是额外参数。这个函数的主要作用是事件流`name`划分成一个一个的事件然后调用`iteratee`函数，并最后返回`events`数组。
+
+```
+ var eventSplitter = /\s+/;
+ //正则函数表达式，判断是否有多个空格
+var eventsApi = function(iteratee, events, name, callback, opts){
+    var i = 0,names
+    if(name && typeof name === 'object'){
+
+        if(callback !== void 0 && 'context' in opts && opts.context === void 0) opts.context = callback
+        for(names = _.keys(name); i < names.length ; i++){
+            //递归调用eventsApi使得分割多个事件对象
+            events = eventsApi(iteratee,events,names[i],name[names[i]],opts)
+        }
+    }
+    else if(name && eventSplitter.test(name)){
+        //如果一个对象提供了多个事件，则遍历事件数组，逐个调用iteratee函数
+        for (names = name.split(eventSplitter); i < names.length;i++)
+            events = iteratee(events, names[i], callback,opts)
+    }
+    else{
+        //只有一个事件
+        events = iteratee(events, name, callback, opts)
+    }
+    return events
+}
+```
+
 然后就可以实现事件的绑定了
 
 ```
@@ -96,7 +109,7 @@ Events.on = function(name, callback, context){
 
 ### listenTo的实现
 
-调用语句：`object.listenTo(other, event, callback) `<br>
+调用语句：`object.listenTo(other, event, callback)` <br>
 紧接着来看看`listenTo`的实现。让`object`监听另一个（`other`）对象上的一个特定事件。
 
 ```
@@ -120,12 +133,14 @@ Events.listenTo = function(obj,name,callback){
 ```
 
 首先判断是否有传入被监听对象`obj`，如果没有，直接返回，否则获取到此被监听对象的被监听`id`值，并将`Events`上的监听事件的对象赋值给`listeningTo`，然后找到`Events`监听`obj`的对象，赋值给`listening`，若此对象不存在，则创建相应对象，最后调用`internalOn`添加监听信息。
+![](https://cdn.gomix.com/6f5b042d-533c-4dc6-9069-85376ee73137%2F%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202017-03-13%20%E4%B8%8A%E5%8D%8812.33.23.png)
+<br>如上图所示，`object`和被监听对象中`_listeningTo`数组中的`_listenId`一一对应。
 
-> 这里最好可以用可视化的图表，画出发起监听的对象和被监听对象，以及这些对象上的关键的属性（比如`_listeningTo`和`_listenId`）的值和引用指向哪里，这样会清楚很多。
+
 
 ### off的实现（别名：unbind）
 
-调用语句：`object.off([event], [callback], [context])`<br>
+调用语句：`object.off([event], [callback], [context])` <br>
 API`off`用于事件的解绑，作用为，从`object`对象上移除先前绑定的`callback`函数。如果没有指定的`context`，所有上下文下的这个`callback`函数都会被移除，也就是会移除所有监听事件；如果没有`callback`，所有绑定在`object`上的回调函数都会被移除；如果没有`event`，所有事件的回调函数都会被移除。上文有说到，绑定，就是把`callback`填到相应的数组里，那么解绑，就是从数组里删除相应的`callback`。<br>
 
 ```
@@ -200,7 +215,7 @@ var offApi = function(events, name, callback, opts){
 
 ### stopListening的实现
 
-调用语句：`object.stopListening([other], [event], [callback]) `<br>
+调用语句：`object.stopListening([other], [event], [callback]) `
 `stopListening`的实现也水到渠成，让`object`停止监听事件。如果调用不带任何参数的`stopListening`，可以移除`object`下所有已经注册的回调函数。`object.stopListening(other)`则为移除`object`上监听的`other`的所有事件，以此类推。下面来看实现的源码。
 
 ```
@@ -228,7 +243,7 @@ Events.stopListening = function(obj, name, callback){
 
 ### once的实现
 
-调用语句：`object.once(event, callback, [context]) `<br>
+调用语句：`object.once(event, callback, [context]) `
 用法跟`on`很像，在`object`上绑定一个`callback`回调函数，只要名为`name`的事件触发该回调函数就会调用，两者的区别在于`once`绑定的回调函数`callback`触发一次后就会被自动移除。<br>
 先来看看辅助函数`onceMap`的实现：
 
@@ -273,7 +288,7 @@ Events.listenToOnce = function(obj,name,callback){
 
 ### trigger的实现
 
-调用语句：`object.trigger(event, [*args]) ` <br>
+调用语句：`object.trigger(event, [*args])`
 API`trigger`用于触发给定`event`中的一个或多个用空格隔开的事件的回调函数。后续传入 的参数会传递到触发事件的回调函数里。 `trigger`函数有两个辅助函数，其中`triggerApi`用于判断传入的事件是否为特殊事件`all`，另一个`triggerEvents`，则是`trigger`的核心函数，用于触发相应事件。<br>
 首先来看`triggerEvents`。
 
@@ -296,10 +311,8 @@ var triggerEvents = function(events,args){
 }
 ```
 
-传入`triggerEvents`中参数列表中，第一个参数为事件数组，随后则为绑定的函数列表，由于backbone中回调函数参数大多数都是一次不超过3个，并且`call`函数比`apply`函数的性能高，所以为了提高函数的调用效率，根据`args`数组的长度分类，当数组长度为0，1，2，3时，使用`call`函数，超过3则调用`apply`函数。<br>
+传入`triggerEvents`中参数列表中，第一个参数为事件数组，随后则为绑定的函数列表，由于backbone中回调函数参数大多数都是一次不超过3个，并且直接传入参数的`call`函数比以数组作为参数传入的`apply`函数的性能高（请戳[call和apply的性能对比](https://github.com/coderwin/__/issues/6)），所以为了提高函数的调用效率，根据`args`数组的长度分类，当数组长度为0，1，2，3时，使用`call`函数，超过3则调用`apply`函数。<br>
 然后是`triggerApi`，如果事件数组存在的话，判断是否为特殊事件`all`，即为`obj.on('all', function(){}) `，所有事件发生都能触发这个特别的事件。
-
-> `call`函数比`apply`函数的性能高，为什么呢？
 
 ```
 //判断事件是否存在以及该事件是否是特殊事件all
@@ -336,6 +349,4 @@ Events.trigger = function(name) {
 ```
 
 <br>
-至此，backbone中的Events的核心API就全部分析完毕了。
-
-> 最后最好介绍一下Backbone中的内置事件。内置事件是Backbone的各个组件在生命周期的特定时刻触发的事件。和Vue的生命周期方法其实是一回事。要把这个点明。
+至此，backbone中的Events的核心API就全部分析完毕了。还需要注意的一点是，内置事件Events是Backbone的各个组件在生命周期的特定时刻触发的事件，在绑定前不需要声明，并且可以给予对象绑定和触发自定义事件的能力，随着页面初始化而产生，销毁而销毁。
